@@ -2,9 +2,6 @@
 using EvalM1_API_mdp.Data.DAO.Interfaces;
 using EvalM1_API_mdp.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging; // Ajout de l'espace de noms pour le logging
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EvalM1_API_mdp.Controllers
 {
