@@ -39,17 +39,19 @@ namespace EvalM1_API_mdp.Migrations
                 name: "Applications",
                 columns: table => new
                 {
-                    IdApplication = table.Column<int>(type: "int", nullable: false),
+                    IdApplication = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    TypeId = table.Column<string>(type: "nvarchar(3)", nullable: false)
+                    TypeId = table.Column<string>(type: "nvarchar(3)", nullable: false),
+                    IdPassword = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Applications", x => x.IdApplication);
                     table.ForeignKey(
-                        name: "FK_Applications_Passwords_IdApplication",
-                        column: x => x.IdApplication,
+                        name: "FK_Applications_Passwords_IdPassword",
+                        column: x => x.IdPassword,
                         principalTable: "Passwords",
                         principalColumn: "IdPassword",
                         onDelete: ReferentialAction.Cascade);
@@ -69,6 +71,11 @@ namespace EvalM1_API_mdp.Migrations
                     "CLI",
                     "PRO"
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Applications_IdPassword",
+                table: "Applications",
+                column: "IdPassword");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_TypeId",

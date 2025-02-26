@@ -21,10 +21,11 @@ namespace EvalM1_API_mdp
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(25);
                 entity.Property(e => e.Description).HasMaxLength(255);
 
-                // Relation One-to-One
+                // Relation un-à-un entre Application et Password
                 entity.HasOne(a => a.Password)
-                      .WithMany(p => p.Applications)
-                      .HasForeignKey(a => a.IdApplication);
+                      .WithMany(p => p.Applications)  // Un mot de passe peut être associé à plusieurs applications
+                      .HasForeignKey(a => a.IdPassword)  // Clé étrangère vers Password
+                      .OnDelete(DeleteBehavior.Cascade);  // Si un mot de passe est supprimé, les applications associées seront supprimées
 
                 entity.HasOne(a => a.Type)
                       .WithMany(t => t.Applications)

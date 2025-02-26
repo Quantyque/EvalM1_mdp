@@ -22,6 +22,32 @@ builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new ApiKeyAuthFilter("test"));
 });
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "Clé API requise. Exemple: 'test'",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Name = "x-api-key", // Nom du header attendu
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Scheme = "ApiKeyScheme"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                }
+            },
+            new List<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 

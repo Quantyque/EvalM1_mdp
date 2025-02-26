@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvalM1_API_mdp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250226122513_InitialInitDatabase")]
+    [Migration("20250226162106_InitialInitDatabase")]
     partial class InitialInitDatabase
     {
         /// <inheritdoc />
@@ -27,12 +27,18 @@ namespace EvalM1_API_mdp.Migrations
             modelBuilder.Entity("EvalM1_API_mdp.Model.Application", b =>
                 {
                     b.Property<int>("IdApplication")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdApplication"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("IdPassword")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -44,6 +50,8 @@ namespace EvalM1_API_mdp.Migrations
                         .HasColumnType("nvarchar(3)");
 
                     b.HasKey("IdApplication");
+
+                    b.HasIndex("IdPassword");
 
                     b.HasIndex("TypeId");
 
@@ -97,7 +105,7 @@ namespace EvalM1_API_mdp.Migrations
                 {
                     b.HasOne("EvalM1_API_mdp.Model.Password", "Password")
                         .WithMany("Applications")
-                        .HasForeignKey("IdApplication")
+                        .HasForeignKey("IdPassword")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

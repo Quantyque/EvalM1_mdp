@@ -26,8 +26,26 @@ namespace EvalM1_API_mdp.DAO
 
         public async Task AddPasswordAsync(Password password)
         {
+            // Vérifier si l'application existe en recherchant dans les mots de passe existants
+            var existingPassword = await _context.Passwords
+                                                 .FirstOrDefaultAsync(p => p.IdApplication == password.IdApplication);
+            if (existingPassword != null)
+            {
+                // Si un mot de passe existe déjà pour cette application, envoyer une erreur
+                throw new InvalidOperationException("Cette application a déjà un mot de passe associé.");
+            }
+
+            // Vérifier si l'application existe
+            var application = await _context.Applications
+                                            .FirstOrDefaultAsync(a => a.IdApplication == password.IdApplication);
+
+            if (application == null)
+            {
+                // Si l'application n'existe pas, envoyer une erreur
+                throw new ArgumentException("L'application spécifiée n'existe pas.");
+            }
+
             // Récupérer le type de l'application associée
-            Application application = (Application)await _applicationDao.GetApplicationById(password.IdApplication);
             string appType = application.Type.TypeCode;
 
             // Chiffrement dynamique basé sur le type d'application

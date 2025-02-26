@@ -22,23 +22,45 @@ namespace EvalM1_API_mdp.DAO
 
         public async Task AddApplicationAsync(Application application)
         {
-            // Assurez-vous de récupérer l'Application en utilisant l'ID
-            var applicationEntity = await _context.Applications.Include(a => a.Password)
-                                                               .FirstOrDefaultAsync(a => a.IdApplication == application.IdApplication);
-            if (applicationEntity == null)
+            // Vérifier si l'application existe déjà en base
+            var existingApplication = await _context.Applications
+                .Include(a => a.Password)
+                .FirstOrDefaultAsync(a => a.IdApplication == application.IdApplication);
+
+            if (existingApplication != null)
             {
-                throw new Exception("Pas d'applications trouvées");
+                // Vérifier si l'application a déjà un mot de passe
+                if (existingApplication.Password != null)
+                {
+                    throw new Exception("L'application existe déjà et possède un mot de passe.");
+                }
+
+                // Si l'application existe mais n'a pas de mot de passe, on l'ajoute
+                existingApplication.Password = new Password
+                {
+                    PasswordValue = application.Password.PasswordValue,
+                    IdApplication = existingApplication.IdApplication
+                };
+            }
+            else
+            {
+                // Si l'application n'existe pas, on la crée avec son mot de passe
+                var newApplication = new Application
+                {
+                    IdApplication = application.IdApplication,
+                    Name = application.Name,
+                    Description = application.Description,
+                    TypeId = application.TypeId,
+                    Password = new Password
+                    {
+                        PasswordValue = application.Password.PasswordValue
+                        //IdApplication = application.IdApplication
+                    }
+                };
+
+                _context.Applications.Add(newApplication);
             }
 
-            // Créer et associer le mot de passe à l'application
-            var password = new Password
-            {
-                PasswordValue = application.Password.PasswordValue,
-                IdApplication = application.IdApplication
-            };
-
-            _context.Applications.Add(applicationEntity);
-            _context.Passwords.Add(password);
             await _context.SaveChangesAsync();
         }
 
