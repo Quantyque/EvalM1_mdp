@@ -3,10 +3,8 @@
     public class Password
     {
         public int IdPassword { get; set; }
-        public string PasswordValue { get; set; } // Clé primaire unique
-
-        // Relation One-to-One avec Application
-        public Application Application { get; set; }
-        public int IdApplication { get; set; } // Clé étrangère de l'Application
+        public string PasswordValue { get; set; }
+        public int IdApplication { get; set; }  // Clé étrangère vers Application
+        public ICollection<Application> Applications { get; set; } // Relation un-à-plusieurs avec Application
     }
 }

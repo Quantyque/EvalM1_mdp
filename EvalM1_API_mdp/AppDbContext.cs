@@ -20,12 +20,15 @@ namespace EvalM1_API_mdp
                 entity.HasKey(e => e.IdApplication);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(25);
                 entity.Property(e => e.Description).HasMaxLength(255);
-                entity.Property(e => e.Type).HasMaxLength(255).IsUnicode(true);
 
                 // Relation One-to-One
                 entity.HasOne(a => a.Password)
-                      .WithOne(p => p.Application)
-                      .HasForeignKey<Password>(p => p.IdApplication);
+                      .WithMany(p => p.Applications)
+                      .HasForeignKey(a => a.IdApplication);
+
+                entity.HasOne(a => a.Type)
+                      .WithMany(t => t.Applications)
+                      .HasForeignKey(a => a.TypeId);
             });
 
             // Application entity configuration
@@ -34,6 +37,12 @@ namespace EvalM1_API_mdp
                 entity.HasKey(e => e.IdPassword);
                 entity.Property(e => e.PasswordValue).IsRequired().HasMaxLength(255).IsUnicode(true);
             });
+
+            // Ajout des entrées par défaut dans la table Type (PRO et CLI)
+            modelBuilder.Entity<Model.Type>().HasData(
+                new Model.Type { TypeCode = "PRO" },
+                new Model.Type { TypeCode = "CLI" }
+            );
         }
     }
 }

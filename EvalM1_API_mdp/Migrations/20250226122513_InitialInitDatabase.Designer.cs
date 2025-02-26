@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvalM1_API_mdp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250226094022_AddNewFieldToApplication")]
-    partial class AddNewFieldToApplication
+    [Migration("20250226122513_InitialInitDatabase")]
+    partial class InitialInitDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,10 +27,7 @@ namespace EvalM1_API_mdp.Migrations
             modelBuilder.Entity("EvalM1_API_mdp.Model.Application", b =>
                 {
                     b.Property<int>("IdApplication")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdApplication"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -42,13 +39,13 @@ namespace EvalM1_API_mdp.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("TypeId")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(3)");
 
                     b.HasKey("IdApplication");
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Applications");
                 });
@@ -72,27 +69,57 @@ namespace EvalM1_API_mdp.Migrations
 
                     b.HasKey("IdPassword");
 
-                    b.HasIndex("IdApplication")
-                        .IsUnique();
-
                     b.ToTable("Passwords");
                 });
 
-            modelBuilder.Entity("EvalM1_API_mdp.Model.Password", b =>
+            modelBuilder.Entity("EvalM1_API_mdp.Model.Type", b =>
                 {
-                    b.HasOne("EvalM1_API_mdp.Model.Application", "Application")
-                        .WithOne("Password")
-                        .HasForeignKey("EvalM1_API_mdp.Model.Password", "IdApplication")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("TypeCode")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
 
-                    b.Navigation("Application");
+                    b.HasKey("TypeCode");
+
+                    b.ToTable("Type");
+
+                    b.HasData(
+                        new
+                        {
+                            TypeCode = "PRO"
+                        },
+                        new
+                        {
+                            TypeCode = "CLI"
+                        });
                 });
 
             modelBuilder.Entity("EvalM1_API_mdp.Model.Application", b =>
                 {
-                    b.Navigation("Password")
+                    b.HasOne("EvalM1_API_mdp.Model.Password", "Password")
+                        .WithMany("Applications")
+                        .HasForeignKey("IdApplication")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("EvalM1_API_mdp.Model.Type", "Type")
+                        .WithMany("Applications")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Password");
+
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("EvalM1_API_mdp.Model.Password", b =>
+                {
+                    b.Navigation("Applications");
+                });
+
+            modelBuilder.Entity("EvalM1_API_mdp.Model.Type", b =>
+                {
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }
