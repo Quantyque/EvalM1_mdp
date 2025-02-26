@@ -5,9 +5,8 @@
         public int IdApplication { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Type { get; set; }
-
-        // Relation One-to-One
-        public Password Password { get; set; }
+        public string TypeId { get; set; }
+        public Type Type { get; set; }  // Navigation vers Type
+        public Password Password { get; set; }  // Navigation vers Password
     }
 }

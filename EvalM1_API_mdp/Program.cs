@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen(); // Générer la documentation Swagger
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IPasswordDAO, PasswordDao>();
 builder.Services.AddScoped<IApplicationDAO, ApplicationDao>();
+builder.Services.AddScoped<PasswordEncryptionService>();
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new ApiKeyAuthFilter("test"));
